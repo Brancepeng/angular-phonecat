@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="Demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+</head>
+<body >
+
+<div class="container-fluid">
+    <div class="row" ng-controller="phoneCtrl">
+        <div class="col-md-2">
+            <!--Sidebar content-->
+
+            Search: <input ng-model="query1">
+            Sort By:
+            <!--<select ng-model="orderProp">
+                <option value="name">Alphabetical</option>
+                <option value="age">Newest</option>
+            </select>-->
+            <select ng-model="orderProp" ng-options="o.value as o.key for o in orderProps"></select>
+        </div>
+        <div class="col-md-10">
+            <!--Body content-->
+
+            <ul class="phones">
+                <li ng-repeat="phone in phones | filter:query1 |orderBy : orderProp">
+                    {{phone.name}}
+                    <p>{{phone.snippet}}</p>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+   <!-- <ul>
+        <li>
+            <span>Nexus S</span>
+            <p>
+                Fast just got faster with Nexus S.
+            </p>
+        </li>
+        <li>
+            <span>Motorola XOOM™ with Wi-Fi</span>
+            <p>
+                The Next, Next Generation tablet.
+            </p>
+        </li>
+    </ul>-->
+</div>
+
+
+
+
+<script type="text/javascript" src="angular/angular.min.js" ></script>
+<script src="angular-route/angular-route.js"></script>
+<script  src="app.js" ></script>
+<script  src="controllers/phoneCtrl.js" ></script>
+</body>
+</html>
