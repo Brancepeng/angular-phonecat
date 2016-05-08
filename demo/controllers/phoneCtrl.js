@@ -6,7 +6,7 @@
     'use strict';
 
     //first way to define the phoneCtrl.
-    app.controller('phoneCtrl',['$scope','$http',function($scope,$http){
+    app.controller('phoneCtrl',['$scope','$http','Phone',function($scope,$http,Phone){
 
         //define scope variables;
 
@@ -40,11 +40,14 @@
         //If you inspect a Scope, you may also notice some properties that begin with $$.
         // These properties are considered private, and should not be accessed or modified.
 
-        $http.get('data/phones.json').success(function(data){
+        /*$http.get('data/phones.json').success(function(data){
             //Notice that Angular detected the json response and parsed it for us!
             $scope.phones = data;
-        });
+        });*/
 
+        //now let us use Angular's $resource service instead of $http service above.
+
+        $scope.phones = Phone.query();
     }]);
 
     //Another way to define the phoneCtrl.

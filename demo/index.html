@@ -2,31 +2,34 @@
 <html lang="en" ng-app="Demo">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-
-
+    <title>Google Phone Gallery</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/animations.css">
 </head>
 <body >
 
-<div class="container-fluid">
+<!--<div class="container-fluid">
+
     <div class="row" ng-controller="phoneCtrl">
         <div class="col-md-2">
-            <!--Sidebar content-->
+            &lt;!&ndash;Sidebar content&ndash;&gt;
 
             Search: <input ng-model="query1">
             Sort By:
-            <!--<select ng-model="orderProp">
+            &lt;!&ndash;<select ng-model="orderProp">
                 <option value="name">Alphabetical</option>
                 <option value="age">Newest</option>
-            </select>-->
+            </select>&ndash;&gt;
             <select ng-model="orderProp" ng-options="o.value as o.key for o in orderProps"></select>
         </div>
         <div class="col-md-10">
-            <!--Body content-->
+            &lt;!&ndash;Body content&ndash;&gt;
 
             <ul class="phones">
-                <li ng-repeat="phone in phones | filter:query1 |orderBy : orderProp">
-                    {{phone.name}}
+                <li ng-repeat="phone in phones | filter:query1 |orderBy : orderProp" class="thumbnail">
+                    <a class="thumb"><img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}"></a>
+                    <a>{{phone.name}}</a>
                     <p>{{phone.snippet}}</p>
                 </li>
             </ul>
@@ -34,7 +37,7 @@
         </div>
     </div>
 
-   <!-- <ul>
+    &lt;!&ndash; <ul>
         <li>
             <span>Nexus S</span>
             <p>
@@ -47,15 +50,19 @@
                 The Next, Next Generation tablet.
             </p>
         </li>
-    </ul>-->
-</div>
+    </ul>&ndash;&gt;
+</div>-->
+<!--change a way to accomplish the contents above-->
 
+<div ng-view=""></div>
 
-
-
-<script type="text/javascript" src="angular/angular.min.js" ></script>
-<script src="angular-route/angular-route.js"></script>
+<script type="text/javascript" src="bower_components/angular/angular.min.js" ></script>
+<script src="bower_components/angular-route/angular-route.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
 <script  src="app.js" ></script>
 <script  src="controllers/phoneCtrl.js" ></script>
+<script  src="controllers/phoneDetailCtrl.js" ></script>
+<script  src="filters/filter.js" ></script>
+<script  src="services/service.js" ></script>
 </body>
 </html>
