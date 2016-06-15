@@ -260,6 +260,117 @@
         </footer>*/
 
 
-    //actually,
+    //actually,For each item/iteration, ng-repeat creates a new scope, which prototypically inherits
+    // from the parent scope, but it also assigns the item's value to a new property on the new child
+    // scope. (The name of the new property is the loop variable's name.) Here's what the Angular
+    // source code for ng-repeat actually is:
+
+    //childScope = scope.$new(); // child scope prototypically inherits from parent scope ...
+    //childScope[valueIdent] = value; // creates a new childScope property
+
+
+    //directives(custom)
+    //the details click: http://onehungrymind.com/angularjs-sticky-notes-pt-2-isolated-scope/
+
+
+    //angularJs isolated scope
+
+    //You can interact with isolated scope in three ways:
+
+    //1th:Attributes
+
+    /*You can bind a isolated scope property to a DOM attribute. This sets up a one-way databinding
+     from the parent scope to the isolated scope. If the parent scope changes, the isolated scope will
+      reflect that change, but not the other way around. You wire this up using an @ symbol in your
+      scope property definition in the directive.
+*/
+
+//the example as follows:
+
+   /* .directive('myComponent', function () {
+        return {
+            scope:{
+                attributeFoo:'@'
+            }
+        };
+    })*/
+
+    //and the html as follows:
+
+    /*<my-component attribute-foo="{{foo}}"></my-component>*/
+
+    //the html as follows :
+
+    //<my-component attribute-foo="{{foo}}"></my-component>
+
+
+    //2th:Bindings :This works almost exactly like the previous example except that you use an = sign
+    // instead of an @ symbol, as follows:
+
+    /*.directive('myComponent', function () {
+        return {
+            scope:{
+                isolatedBindingFoo:'=',
+            }
+        };
+    })*/
+
+    //But what if I want to call a function on the parent scope from isolated scope? This is a bit
+    // more tricky, but it is not going to make a grown man cry over it.
+
+    //3th:Expressions
+
+    //the directive :
+    .directive('myComponent', function () {
+        return {
+            scope:{
+                isolatedExpressionFoo:'&'
+            }
+        };
+    })
+
+    //the html:
+   /* <input ng-model="isolatedFoo">
+        <button class="btn" ng-click="isolatedExpressionFoo({newFoo:isolatedFoo})">Submit</button>
+*/
+
+    //And now when I call isolatedExpressionFoo in my isolated scope it serves as a wrapper to whatever
+    // I defined in my directive definition. In this case it is updateFoo. If you want to pass data
+    // through the function wrapper, you do that by passing your isolated variables through via an
+    // object map. This is why my function call looks like this isolatedExpressionFoo({newFoo:isolatedFoo}).
+
+    .controller('MyCtrl', ['$scope', function ($scope) {
+        $scope.updateFoo = function (newFoo) {
+            $scope.foo = newFoo;
+        }
+    }]);
+
+
+    //the content above illuminate the scope.
+
+
+    //4.transclude :
+    /*transclude: true - the directive creates a new "transcluded" child scope, which prototypically
+     inherits from the parent scope. So if your transcluded content (i.e., the stuff that ng-transclude
+      will be replaced with) requires 2-way data binding to a primitive in the parent scope,
+      use $parent, or change the model to be an object and then bind to a property of that object. This
+       will avoid child scope hiding/shadowing of parent scope properties.
+*/
+    //for more information on transcluded scopes ,see stackoverflow : AngularJS two way binding not working in directive with transcluded scope
+
+    //Summary about scopes:
+
+    //There are four types of scopes:
+   /* normal prototypal scope inheritance -- ng-include, ng-switch, ng-controller, directive with scope: true
+
+      normal prototypal scope inheritance with a copy/assignment -- ng-repeat. Each iteration of ng-repeat creates
+      a new child scope, and that new child scope always gets a new property.
+
+      isolate scope -- directive with scope: {...}. This one is not prototypal,
+       but '=', '@', and '&' provide a mechanism to access parent scope properties, via attributes.
+
+      transcluded scope -- directive with transclude: true. This one is also normal prototypal scope
+      inheritance, but it is also a sibling of any isolate scope.
+*/
 
 })();

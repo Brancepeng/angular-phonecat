@@ -1,0 +1,191 @@
+
+
+请在stackoverflow中搜索：
+
+    AngularJS: What is the need of the directive's link function when we already had directive's
+controller with scope?
+
+比如说，我想在指令的作用域和模板中来出来一些操作，但是好像在link（）函数或者controller（）函数中都可达到目的，因为
+两者都可以和作用域通信。
+
+那么：When is it the case when I have to use link function and not the controller ?
+
+在什么情况下不得使用link函数而不是用controller函数呢？
+
+angular.module('myApp').directive('abc', function($timeout) {
+    return {
+        restrict: 'EA',
+        replace: true,
+        transclude: true,
+        scope: true,
+        link: function(scope, elem, attr) { /* link function */ },
+        controller: function($scope, $element) { /* controller function */ }
+    };
+}
+
+
+当然，我也知道在link函数中是一个非angular世界。所以我可以使用$watch,$digest,$apply.
+
+也就是说：What is the significance of link function ? ( When we had controller already )
+
+首先，下面参考的是Quora上的答案：Angular directive functions: controller vs link vs compile
+
+
+How many times did you scratch your head against directive scope, or confuse between compile,
+controller, and link functions？Let’s me help you understand those functions in this article.
+
+
+So when writing a AngularJS directive, you can use these function to manipulate content, look
+and behavior of the directive, they are:
+
+compile function,controller function,pre-link function,post-link function.
+
+
+Most of us are familiar with post-link function because we see it in most of AngularJS tutorials.
+Most of time we don't need to use pre-link function.
+
+
+Here is the rules for those functions:
+
+
+compile should be used when you need modify directive template, like add new expression, append
+another directive inside this directive…those things . you’ll need to use compile function to do
+those jobs.
+
+
+controller is used when you need to share or reuse $scope data. Or when you want directive
+interactive with each other.
+
+
+link is the function which used when you need to attach event handler, modify DOM.
+
+
+这里注释：angular.element这个函数的使用：
+
+封装一个原生DOM元素或者HTML字符串为一个jQuery对象。
+If jQuery is available, angular.element is an alias for the jQuery function.If jQuery is not
+available, angular.element delegates to Angular's built-in subset of jQuery, called "jQuery lite"
+or jqLite.
+
+
+Note1：All element references in Angular are always wrapped with jQuery or jqLite (such as the element
+argument in a directive's compile / link function). They are never raw DOM references.
+
+
+Note2：Keep in mind that this function will not find elements by tag name / CSS selector. For
+lookups by tag name, try instead angular.element(document).find(...) or $document.find(), or
+use the standard DOM APIs, e.g. document.querySelectorAll().
+
+
+
+Below is an example of compile function：
+
+
+angular.module('app',[])
+    .directive('compileExample',compileExample);
+
+function compileExample(){
+    return {
+
+        restrict:'E',
+        scope:true,
+        compile:function(tElement,tAttrs){
+
+            angular.element(tElement).append('My name is {{name}}');
+
+            return function postLink(csope,element,attrs){
+
+                    scope.name = "David";
+
+
+            }
+
+
+        }
+
+    };
+}
+上面的例子详见:angular-compile.html
+
+
+In the compile function, we append an expression {{name}} into the template and in the link
+function, we assign “David” to scope.name and directive return: “My name is David”.
+
+We can’t do that in the postLink function because it can’t compile angular expression.
+
+About the controller function, it’s used when we need to share $scope variables or function or reuse it in another directive.
+
+
+Here is the example of our directive.
+
+
+angular.module('app',[])
+
+    .directive('parentDirective',parentDirective)
+    .directive('childDirective',childDirective);
+
+    function parentDirective(){
+
+        return {
+
+            restrict:'E',
+
+            scope:true,
+
+            controller:function($scope){
+
+                  $scope.name = 'Ronaldo';
+                  $scope.say = function() {
+                    alert('Hello ' + $scope.name);
+                  }
+            }
+
+        }
+    }
+
+    function childDirective(){
+
+                return{
+                    restrict:'E',
+
+                    require:'^parentDirective'
+
+                    link:function(scope){
+
+                        scope.name = 'Elisa';
+                        scope.say();
+
+                    }
+                }
+    }
+
+So when the childDirective is instantiated, we see the alert box with message: “Hello Elisa”. The
+say() method is inherited from the parentDirective, we change $scope.name from Ronaldo to Elisa and
+get that nice message.
+
+
+
+Conclusion:
+
+First time when you work with Angular directive, you may confuse about compile, controller and link function. So here is the usage for those functions:
+
+
+Compile is used for modify directive template, append Angular expression, inject another directive to the parent directive.
+
+
+Controller is used when you need to share or reuse directive method.
+
+
+Link is used when you need to modify DOM, attach event handler or run some jQuery code.
+
+
+下面答案来自stackoverflow:
+
+How do angular directives work in a nutshell:
+
+
+
+
+
+
+

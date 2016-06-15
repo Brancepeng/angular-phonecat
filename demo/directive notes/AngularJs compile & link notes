@@ -1,0 +1,250 @@
+
+
+var myModule = angular.module('myModule',[....]);
+
+myModule.directive('namespaceDirectiveName',function(){
+
+    var directiveDefinitionObject = {
+
+        restrict:string,
+
+        priority:number,
+
+        template:string,
+
+        templateUrl：string,
+
+        replace:boolean,
+
+        transclude:boolean,
+
+        scope:boolean or object,
+
+
+        controller:function($scope,$element,$attrs,$transclude){
+
+        ....
+
+
+        },
+
+        require：string,
+
+        link:function(scope,element,attrs){
+
+        ...
+
+
+        },
+
+
+        compile: function(element,attrs,transclude){
+
+            return {
+
+                pre:function(scope,element,attrs,controllers){
+
+                    ...
+                },
+
+                post:function(scope,element,attrs,controllers){
+
+                    ...
+
+                }
+
+
+            }
+
+
+        }
+
+
+    }
+
+    return directiveDefinitionObject;
+
+
+});
+
+
+restrict : 描述了指令在模板中的使用方式;包括：元素，属性，css样式类等等，以上几种方式可以组合使用。
+
+E 元素方式 <my-directive></my-directive>
+A 属性方式 <div my-directive="exp"> </div>
+C 类方式 <div class="my-directive: exp;"></div>
+M 注释方式 <!-- directive: my-directive exp -->
+
+
+priority：设置指令在模板中的执行程序，顺序是相对于同一元素上的其他指令而言的。默认是0.
+
+当一个节点中有多个指令存在时，就按着权限从大到小的顺序依次执行它们的compile函数。相同权重顺序不定。
+
+
+
+template & templateUrl :定义模板的内容 & 路径。
+
+
+replace: 若值为true，则替换指令所在的元素。如果为false或者不指定，则将模板追加到所在元素内部。
+
+
+transclude：把指令元素中原来的子节点移动到一个新模板内部。当此属性为true的时候，指令会删掉原来的
+内容，使你的模板可以用ng-transclude指令进行重新插入。可以是element或true两种值。
+
+
+
+scope：在指令中访问scope对象，以便观察数据模型的值，当这些值发生变化时刷新UI。scope对象的类型有以下三种：
+
+
+1.指令对应的DOM元素上存在scope对象
+
+
+2.你可以创建一个新的scope对象，它继承了外层控制器的scope。在继承树中，位于当前scope上方的所有的scope对象中的
+值都可以被读取。对于DOM元素里的其他指令，如果需要这种类型的scope，也可以共享这个scope，并且用它和树中的其他
+scope进行通信。
+
+
+3.使用独立的scope对象，它不会从父对象上继承模型的任何属性，当创建可复用的组件，并且需要把当前的指令的操作和父scope
+隔离开时，你就需要用到这个选项。
+
+配置语法：
+
+
+现有的scope scope: false（默认值）
+新的scope scope: true
+独立scope scope: {}
+
+
+那么独立的scope怎么与对应的父scope进行通信呢？
+
+
+有三种方法可以在scope和父scope之间传递数据，我们把这种绑定方式叫做“绑定策略”。
+
+
+1.@ 把当前指令当前属性作为字符串传递。你还可以绑定来自外层scope的值，在属性值中插入{{}}即可。
+
+2.= 绑定当前属性，它带有一个来自指令父scope的属性。
+
+
+3.传递一个来自父scope的函数，稍后调用。
+
+
+controller:
+
+创建一个控制器，它会暴露一个API，利用这个API可以在多个指令之间进行通信。
+
+function controller($scope, $element, $attrs, $transclude) { ... }
+
+
+require:引用其他指令的控制器的名字，要求必须存在一个指令，当前指令才能正确运行。
+
+    ？name 忽略不存在的错误；
+
+    ^name 在父级查找。
+
+
+link：使用编程方式修改最终生成的DOM元素实例，添加数据监听器，并设置数据绑定。
+
+
+function link(scope, iElement, iAttrs, controller) { ... }
+
+
+为了让视图成为动态的，Angular会对每一条指令运行一个link函数。link函数的一般操作是在DOM或者模型上创建监听器
+，监听器会使视图和模型的内容随时保持同步。
+
+
+compile:
+
+在使用ng-repeat 时，用编程方式修改DOM模板时，从而实现同一个指令的跨院多个实例的特性。compile函数也可以返回一个
+
+link函数。可以用它来修改产生的元素的实例。
+
+
+function compile(tElement, tAttrs, transclude) { ... }
+
+
+
+在这个阶段，Angular将会遍历DOM结构，标识出模板中注册的所有指令。对于每一条指令，它会根据指令定义的
+规则（template，replace，transclude等）来转换DOM结构，如果存在compile函数，则调用它。调用compile函数
+将得到一个编译好的template函数，它将会调用从所有指令中搜集而来的link函数。
+
+
+
+1.compile function:
+
+use for template DOM manipulation (i.e., manipulation of tElement = template element), hence
+manipulations that apply to all DOM clones of the template associated with the directive. (If
+you also need a link function (or pre and post link functions), and you defined a compile function,
+the compile function must return the link function(s) because the 'link' attribute is ignored if
+the 'compile' attribute is defined.)
+
+
+2.link function:
+
+normally use for registering DOM listeners (i.e., $watch expressions on the scope) as well as
+updating the DOM (i.e., manipulation of iElement = individual instance element). It is executed
+after the template has been cloned -- e.g., inside an <li ng-repeat...>, the link function is
+executed after the <li> template (tElement) has been cloned (into an iElement) for that particular
+<li> element. A $watch allows a directive to be notified of scope property changes (a scope is
+associated with each instance), which allows the directive to render an updated instance value
+to the DOM.
+
+
+3.controller function:
+
+must be used when another directive needs to interact with this directive. E.g., on the AngularJS
+home page, the pane directive needs to add itself to the scope maintained by the tabs directive,
+hence the tabs directive needs to define a controller method (think API) that the pane directive
+can access/call.
+
+
+For a more in-depth explanation of the tabs and pane directives, and why the tabs directive creates
+ a function on its controller using this (rather than on $scope), please see this vs $scope in
+AngularJS controllers.
+
+In general, you can put methods, $watches, etc. into either the directive's controller or link
+function. The controller will run first, which sometimes matters (see this fiddle which logs when
+the ctrl and link functions run with two nested directives). As Josh mentioned in a comment, you may
+ want to put scope-manipulation functions inside a controller just for consistency with the rest of
+the framework.
+
+
+思考：如何在不同的指令和控制器中共享作用域？
+
+//parent scope;
+
+app.directive('parentscope', function() {
+    return {
+        controller: function($scope) {
+            this.scope = $scope;
+        }
+    };
+});
+
+
+
+//the directive that will set the value on the parent scope
+
+app.directive('info', function() {
+    return {
+        require: '^parentscope',
+        scope : {
+            info : '=info'
+        },
+        link: function(scope, element, attrs, parentscope) {
+            parentscope.scope.info = scope.info;
+        }
+    };
+});
+
+
+
+
+
+
+
+
+
+
+
+

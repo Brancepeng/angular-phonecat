@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>兄弟controller之间的通信</title>
+    <script type="text/javascript" src="angular.js"></script>
+    <script type="text/javascript" src="4.js"></script>
+</head>
+<body ng-app="myApp">
+
+<div ng-controller="MainCtrl">
+    <input type="text" ng-model="test" />
+    <button ng-click="change()">click me</button>
+</div>
+<div ng-controller="SideCtrl">
+    <input type="text" ng-model="name" />
+    <button ng-click="add()">my name </button>
+</div>
+</body>
+</html>
