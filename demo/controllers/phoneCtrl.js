@@ -47,7 +47,7 @@
 
         //now let us use Angular's $resource service instead of $http service above.
 
-        $scope.phones = Phone.query();
+        //$scope.phones = Phone.query();
     }]);
 
     //Another way to define the phoneCtrl.
