@@ -1,0 +1,32 @@
+
+1.为什么ng-repeat不能遍历含有相同值的数组？
+
+因为默认的tracking function根据数组的id来排序的，这个函数不允许数组中有重复的值。
+ng-repeat通过$watchCollection函数来检测所遍历的数组的变化。
+先了解一下$watchCollection的检测机制：
+这个函数用来检测对象的属性变化，并且当对象的属性发生变化时触发。例如数组，他会监视数组的每项值的变化，
+对于对象而言，它会监视对象的属性，当他们发生变化时，会触发这个函数。
+
+在所遍历的数组或者对象变化时，ng-repeat相应DOM做出相应的一致变化。
+
+当数组中增加一项时，对应会创建一个新的模板实例，再跟新相应的DOM；（注：ng-repeat的数组中每项对应着一个独立的模板，
+每个对应的模板实例会产生一个独立的作用域。）
+
+当数组中删除一项时，被删除项对应的模板会被从DOM中删除。
+
+当数组被重新排序时，每个相应的模板会被重新排序。
+
+为了最小化DOM模板的创建，ngRepeat defines a function to "keep track" of all items in the collection
+ and their corresponding DOM elements. For example, if an item is added to the collection, ngRepeat
+  will know that all other items already have DOM elements, and will not re-render them.
+
+
+ This is because when there are duplicates, it is not possible to maintain a one-to-one mapping
+  between collection items and DOM elements.
+
+//也就是说，当数组中元素重复时，那么维护一个数组值和对应DOM模板的一对一的映射就显得不太方便。
+
+
+当时，可是使用 track by $index 解决上述问题。
+
+了解更多详情，请点击https://docs.angularjs.org/api/ng/directive/ngRepeat

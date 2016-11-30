@@ -1,0 +1,31 @@
+
+
+$resource -> $resourceProvider -> service in module ngResource
+
+A factory which create a resource object that lets you interact with RESTFul server-sider data sources.
+
+The returned resource object has action methods which provide high-level behaviours without the need to interact with the low level $http service.
+
+
+Requires the module ngResource to be installed.
+
+By default, trailing slashes (斜杠) will be stripped from the calculated URLs, which can pose problems with server backends that do not expect that behavior. This can be disabled by configuring the $resourceProvider like this:
+默认情况下，末尾斜杠（可以引起后端服务器不期望出现的行为）将从计算后的URL中剥离。
+
+这个可以通过$resourceProvider对象配置：
+app.config(["$resourceProvider",function($resourceProvider){
+      $resourceProvider.defaults.stripTrailingSlashes = false;
+  }])
+
+依赖：$http,$log,$q,$timeout
+
+使用：$resource(url,[paramDefaults],[actions],options);
+
+url:
+    一个带有参数的url模板，带有前缀参数（如：/user/:username）.如果你是用的是带有端口号的（如http://example.com:8080/api），则需慎重考虑。
+
+paramDefaults：
+
+    url参数的默认值，这些参数在action方法中重写。如果参数的任何一个值是函数，它将作为每一次请求获取的参数值而被执行(除非该参数被忽略的)。
+    参数对象中的每个键值对都是先绑定到一个url模板，任何多余的密钥都被附加到url query的“？”后。 /path/:verb +{verb:’greet’,salutation:’hello’}  =>  /path/greet?salutation=hello
+

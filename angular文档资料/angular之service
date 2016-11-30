@@ -1,0 +1,51 @@
+
+1.先要搞清楚什么是service，也就是服务？
+
+服务，顾名思义，就是提供一些通用的可以复用的一个容器，容器里面提供了一系列的对象和方法。
+
+angular特征：
+
+官方文档所说的延迟加载（Lazily instantiated ）：说的这么专业化，其实就是说这个容器里面的对象和函数
+只有在被调用的时候，才会触发。
+
+官方文档所说的单例：通俗的讲，就是说，每次调用service容器中的函数时，里面的对象或者经过容器处理的对象会
+发生改变。因为自始至终都是同一个变量。
+
+
+2.如何使用和注册service？
+
+使用：依赖注入，然后service中所有的对象和方法都被暴露出来，可以直接使用；
+
+注册service（自定义）：
+1.通过在Module API上使用。典型的在Module factory上注册service
+
+var myModule = angular.module('myModule', []);
+myModule.factory('serviceId', function() {
+  var shinyNewServiceInstance;
+  // factory function body that constructs shinyNewServiceInstance
+  return shinyNewServiceInstance;
+});
+
+注：在上面的例子当中，注册并不是一个service实例，而是一个工厂函数（factory function），也就是所在service函数被
+调用时被创建新的service实例。这种情况使用于自定义$resource这种service。这种有factory function 制造出来的service
+使用与任何组件（component）中，例如controller，service，filter，directive，通过依赖的方式暴露出service所有的函数。
+
+
+2.在module上面直接注册service。
+
+var myModule = angular.module('myModule', []);
+myModule.service('serviceId', function() {
+  ......
+});
+
+3.使用$provide注册service。
+
+你可以使用内置在angular module的config function 中的$provide service来注册自定义的service。
+
+angular.module('myModule',[]).config(['$provide',function($provide){
+    $provide.factory('serviceId',function(){
+        var shinyNewServiceInstance;
+            // factory function body that constructs shinyNewServiceInstance
+            return shinyNewServiceInstance;
+    });
+}]);

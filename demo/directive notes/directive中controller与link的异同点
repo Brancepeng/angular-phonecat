@@ -184,6 +184,70 @@ Link is used when you need to modify DOM, attach event handler or run some jQuer
 How do angular directives work in a nutshell:
 
 
+1.first,let's begin with a template.
+
+var str = '<div my-directive>{{5+6}}</div>';
+
+2,now,the str template is wrapped as an angular element.
+
+var el = angular.element(str);
+
+3.With el,now we compile it with $compile to get back the link function.
+
+
+var l = $compile(el);
+
+here is what happens:
+
+ 1.$compile 遍历所有的模板，并且收集所有的可识别的指令。
+
+ 2.所有被识别的指令递归编译，并且他们的link函数也被收集。
+
+ 3.然后，所有的link函数被封装在一个link函数中，并且以l（l = $compile(el)）的形式返回。
+
+4.最后，我们提供scope（作用域）给l这个link函数，（给定l函数一个执行上下文（作用域scope和相关变量，例如被操作的相关的
+DOM元素。），执行被封装的link函数里面的link函数集）。
+
+5.This adds the template as a new node to the DOM and invokes controller which adds its watches to the scope
+which is shared with the template in DOM.
+
+5，这个过程会将模板作为一个新的DOM节点添加到DOM树中，然后触发控制器controller，这个控制器里面，可以添加它的监听
+对象到相应的作用域中，（这个作用域是和模板共享的作用域。）
+
+说道这里，总结比较一下compile，link，controller这三个函数的区别。
+
+1.每个指令都只编译一次，但是他们的link函数可以被重复使用。因此，如果一个对象要想被一个directive的所有实例使用，
+
+那么，这个对象必须在这个指令的$compile函数中申明，并赋值。
+
+2.在编译完成之后返回的link函数，这个link函数在什么时候执行？
+ it will be executed while attaching the template to the DOM.
+ 所以，我们会在link函数中添加基于scope处理的事件，或者操作模板中的DOM。
+
+3.最后，当这个指令作用在DOM（模板被添加到DOM树之后）上时，对应申明的controller就会生效，并且与数据模型交互。
+
+因此：
+
+1.在link阶段完成之后，视图设置完成，对于MVC框架而言，$scope就是[M]，$controller就是[C].
+After setting up the view[V] (i.e. template) with link, $scope is our [M] and $controller is our [C]
+in M V C
+
+2.通过在scope上设置监听对象具有双向绑定数据的优势。
+Take advantage of the 2-way binding with $scope by setting up watches.
+3.$scope对象上添加你所需要监听的（可以双向绑定的）对象，可以在这个controller生效。因为在controller中，
+可以在运行时监听模板中任何对象的变化。
+$scope watches are expected to be added in the controller since this is what is watching the template
+during run-time。
+4.最后，controller也可以用在相关得指令之间相互交互。
+
+Finally, controller is also used to be able to communicate among related directives. (Like myTabs example in
+https://docs.angularjs.org/guide/directive)
+
+5.同样，我们也可以在link函数中实现上面的所有需求。
+ It's true that we could have done all of this in the link function as well, but it's about
+separation of concerns.
+
+
 
 
 
